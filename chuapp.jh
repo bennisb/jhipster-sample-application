@@ -1,0 +1,297 @@
+entity Patient {
+	 id Integer, 
+	 ip Integer required, 
+	 nom String required,
+	 prenom String required, 
+	 adresse String,
+	 dateNaissance LocalDate,
+	 age Integer, 
+	 sexe Integer required,
+	 datePriseEnCharge LocalDate,
+	 observation String,
+     telephone Integer,
+     amo Amo,
+     centreOrigineType CentreOrigineType,
+     centreOrigineVille CentreOrigineVille
+}
+
+enum Amo {
+    Ramed, Cnops, Rma, Autres
+} 
+
+enum CentreOrigineType {
+    Public, Prive, Militaire
+} 
+
+enum CentreOrigineVille {
+    Fes, Sefrou, Ifrane, Imouzer, Taounate, Taza, Taza, Missour
+} 
+
+
+
+entity Seance {
+	id Integer,
+    numSeance Integer,
+    date LocalDate,
+    statut StatutS,
+    abordVasculaire AbordVasculaire,
+    prescription Prescription,
+    surveillance Surveillance,
+    patient Patient
+}
+
+// an ignored comment
+/** not an ignored comment */
+entity Prescription {
+	id Integer,
+ 	prescripteur User,
+    statutP StatutP,
+    datePrescription LocalDate,
+    dateSeancePrevu LocalDate,
+    // paramètres prescription:
+    nvUrgence NvUrgence,
+    duree Integer,
+    circuit Circuit,
+    ufTotale Float,
+    profil Boolean,
+    conductiviteP Float,
+    debitPompe Float,
+    temperatureDialysat Float,
+    restitutionP RestitutionP,
+    capillaire Capillaire,
+    atc Boolean,
+    hnfh0 Float,
+    hnfh2 Float,
+    hbpm Float, 
+    
+    observationP String,
+    abordVasculaire AbordVasculaire,
+    patient Patient
+		
+}
+
+entity PrescriptionPerdialyse {
+	id Integer,
+    drogueVa Boolean,
+    loxen Boolean,
+    insuline Boolean,
+    fer Boolean,
+    epo Boolean,
+    ains Boolean,
+    paracetomol Boolean,
+    valium Boolean,
+    atb Boolean,
+    nomAtb String,
+    autre String
+    date LocalDate,
+    type String // prescription ou surveillance
+}
+
+entity Surveillance {
+	id Integer,
+    statutS StatutS,
+    infirmier String,
+    medecinSurveillant User,
+    dateSurveillance LocalDate,
+    poste Poste,
+    generateur Genrateur,
+    autrePoste String,
+    traitementAdministre PrescriptionPerdialyse,
+    observationS String,
+    complications Complications,
+    prescription Prescription,
+    // Param fin de seance:
+    heureFin FLoat,
+    heureDebut FLoat,
+    poid Float,
+    ufNette FLoat,
+    etatConscience String,
+    eupneique String,
+    restitutionReele String
+}
+
+entity User{
+	id Integer,
+    nom String,
+    prenom String,
+    login String, 
+    password String,
+    role String,
+    dateInscription LocalDate
+}
+
+entity MesurePerdialyse{
+ 	id Integer,
+    heure Float,
+    poid Float,
+    ta Float, 
+    temperaturePatient Float,
+    dextro Float,
+    pa Float,
+    pv Float,
+    ptm Float,
+    ufHoraire Float,
+    conductiviteDialysat Float,
+    temperatureDialysat Float,
+    dps Float,
+    heparine Float,
+    rinçage Boolean,
+    transfusion Boolean,
+    numPoche Integer,
+    observation String
+}
+
+entity IndicatiohHd{
+	patient Patient,
+    id Integer,
+    hypercaliemie Boolean,
+    hyperuremie  Boolean,
+    hypercalcemie  Boolean,
+    acidose  Boolean,
+    seanceProgramee  Boolean,
+    epurationToxique  Boolean,
+    autre String,
+    date LocalDate,
+    service String,
+    actif Integer
+}
+
+entity ExamenBiologique{
+	patient Patient,
+    id Integer,
+    date LocalDate,
+    uree Float,
+    creatinine Float,
+    k Float,
+    na Float,
+    ca Float,
+    crp Float,
+    hb Float,
+    gb Float,
+    plaquettes Float,
+    agHbs Float,
+    acHbs String,
+    acHbc String,
+    acHvc String,
+    vih String,
+    autre String,
+    actif Integer
+    
+}
+entity examenClinique {
+	id Integer,
+    patient Patient,
+    date LocalDate,
+    omi Boolean,
+    ralesCrepitant Boolean,
+    dyspnee Boolean,
+    pa String,
+    diurese String,
+    gcs integer min= 3 max=15,
+    autre String,
+    actif Integer
+    
+}
+
+entity Diagnostic {
+	id Integer,
+    patient Patient,
+    ira Boolean,
+    irc Boolean,
+    hdc Boolean,
+    hvb Choix,
+    hvc Choix,
+    vih Choix,
+    autre String,
+    date LocalDate,
+    actif Integer
+    
+}
+
+entity Complications {
+	id Integer,
+    patient Patient,
+    hypertension Boolean,
+    hypotension Boolean,
+    arretCr Boolean,
+    frissons Boolean,
+    fievre Boolean,
+    convulsion Boolean,
+    coagulation Boolean,
+    douleurThoracique Boolean,
+    crompes Boolean,
+    deces Boolean,
+    hemorragie Boolean,
+    hypoglycemie Boolean,
+    hyperglycemie Boolean,
+    autre String,
+}
+enum Choix {
+    +, -, ?
+}
+
+entity Antecedents {
+	patient Patient,
+    id Integer,
+    diabete Boolean,
+    hta Boolean,
+    irc Boolean,
+    hvc Boolean,
+    hvb Boolean,
+    cardiopathie Boolean,
+    autre String,
+    date LocalDate,
+    actif Integer
+}
+relationship OneToOne {
+	Country{region} to Region
+}
+
+relationship OneToOne {
+	Location{country} to Country
+}
+
+relationship OneToOne {
+	Department{location} to Location
+}
+
+relationship ManyToMany {
+	Job{task(title)} to Task{job}
+}
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Employee to Job{employee},
+	/**
+	* A relationship
+	*/
+	Department to
+	/**
+	* Another side of the same relationship
+	*/
+	Employee{department}
+}
+
+relationship ManyToOne {
+	Employee{manager} to Employee
+}
+
+// defining multiple oneToOne relationships
+relationship OneToOne {
+	JobHistory{job} to Job,
+	JobHistory{department} to Department,
+	JobHistory{employee} to Employee
+}
+
+// Set pagination options
+paginate JobHistory, Employee with infinite-scroll
+paginate Job with pagination
+
+// Use Data Transfert Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl except Employee, Job
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
